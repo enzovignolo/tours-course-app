@@ -1,7 +1,6 @@
 {
   "name": "natours",
   "version": "1.0.0",
-  "description": "",
   "main": "app.js",
   "scripts": {
     "start": "nodemon server.js",
@@ -20,5 +19,14 @@
     "morgan": "^1.10.0",
     "validator": "^13.1.17"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/enzocabu/tours-course-app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/enzocabu/tours-course-app/issues"
+  },
+  "homepage": "https://github.com/enzocabu/tours-course-app#readme",
+  "description": ""
 }

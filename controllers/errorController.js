@@ -59,14 +59,19 @@ module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
   err.message = err.message;
+  
 
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
-    console.log(err.message);
-    let error = Object.assign({}, err);
+    // HERE WE CLONE THE ERR OBJECT, THAT HAVE CERTAIN NON ENNUMERABLE PROPERTIES
+    let error ={};
+    Object.getOwnPropertyNames(err).forEach(function(property) {
+      error[property]=err[property];
+    });
+    console.log(error);
+  
     err.message = 'ghola';
-    console.log(error.message);
     if (err.name === 'CastError') {
       error = handleCastErrorDB(error);
     }
@@ -83,8 +88,6 @@ module.exports = (err, req, res, next) => {
       error = handleTokenExpiration(error);
     }
 
-    console.log('hey');
-    console.log(error);
     sendErrorProd(error, res);
   }
 };

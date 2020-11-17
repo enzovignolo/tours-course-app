@@ -29,6 +29,7 @@ const userSchema = new mongoose.Schema({
       message: 'Password does not match!'
     }
   },
+  lastPassModification: Date,
   photo: {
     type: String
   }
@@ -43,6 +44,7 @@ userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, 12);
   //erasing the password stored on passwordConfirmation field.
   this.passwordConfirmation = undefined;
+  this.lastPassModification= new Date();
   next();
 });
 
