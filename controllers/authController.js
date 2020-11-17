@@ -3,6 +3,8 @@ const catchError = require('./../utils/CatchError');
 const jwt = require('jsonwebtoken');
 const AppError = require('../utils/AppError');
 const { promisify } = require('util');
+const { token } = require('morgan');
+const { exists } = require('./../models/userModel');
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.SECRET, {
@@ -54,18 +56,29 @@ exports.protect = catchError(async (req, res, next) => {
   }
   const token = req.headers.authorization.split(' ')[1];
   const { email } = req.body;
-  console.log(token);
 
   // VERIFY TOKEN
 
   const verifiedToken = await promisify(jwt.verify)(token, process.env.SECRET);
-  console.log(verifiedToken);
-  /* if (!verifiedToken) {
-    return new AppError('Invalid token', 401);
-  } */
 
-  // CHECK IF USER EXIST
+  // CHECK IF USER STILL EXISTs
+  const user = await User.findById(verifiedToken.id);
 
+  if (!user) {
+    return next(new AppError('User does not longer exists', 401));
+  }
   // CHECK IF USER CHANGED PASSWORD AFTER TOKEN WAS ISSUED
   next();
 });
+
+/* GET TOKEN
+
+VERIFY THE TOKEN 
+HANDLE INVALID TOKEN
+HANDLE TOKEN EXPIRED
+
+
+VERIFY THAT USER STILL exists
+
+
+VERIFY THAT USER DID NOT CHANGED THE PASSWORD AFTER TOKEN WAS ISSUED */

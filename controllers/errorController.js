@@ -41,14 +41,32 @@ const handleValidationError = (err) => {
   const message = `Invalid input data . ${errors.join('')}`;
   return new AppError(message, 400);
 };
+
+///INVALID TOKEN ERROR HANDLER
+
+const handleInvalidToken = (err) => {
+  const message = 'Invalid Token. Please try to login again!';
+  return new AppError(message, 401);
+};
+/// TOKEN EXPIRED ERROR
+const handleTokenExpiration = (err) => {
+  const message = 'This token has expired. Please login again!';
+  return new AppError(message, 401);
+};
+
+///////
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
+  err.message = err.message;
+
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
-    console.log(err.name);
-    let error = { ...err };
+    console.log(err.message);
+    let error = Object.assign({}, err);
+    err.message = 'ghola';
+    console.log(error.message);
     if (err.name === 'CastError') {
       error = handleCastErrorDB(error);
     }
@@ -58,6 +76,15 @@ module.exports = (err, req, res, next) => {
     if (err.name === 'ValidationError') {
       error = handleValidationError(error);
     }
+    if (err.message === 'invalid signature') {
+      error = handleInvalidToken(error);
+    }
+    if (err.name === 'TokenExpiredError') {
+      error = handleTokenExpiration(error);
+    }
+
+    console.log('hey');
+    console.log(error);
     sendErrorProd(error, res);
   }
 };
