@@ -68,6 +68,16 @@ exports.protect = catchError(async (req, res, next) => {
     return next(new AppError('User does not longer exists', 401));
   }
   // CHECK IF USER CHANGED PASSWORD AFTER TOKEN WAS ISSUED
+
+  if (await user.passwordChanged(verifiedToken.iat)) {
+    return next(
+      new AppError(
+        'Password changed since last login. Please log in again',
+        401
+      )
+    );
+  }
+
   next();
 });
 

@@ -29,7 +29,9 @@ const userSchema = new mongoose.Schema({
       message: 'Password does not match!'
     }
   },
-  lastPassModification: Date,
+  passwordChangedAt: {
+    type: Date
+  },
   photo: {
     type: String
   }
@@ -44,7 +46,6 @@ userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, 12);
   //erasing the password stored on passwordConfirmation field.
   this.passwordConfirmation = undefined;
-  this.lastPassModification= new Date();
   next();
 });
 
@@ -53,6 +54,18 @@ userSchema.methods.comparePassword = async (
   userPassword
 ) => {
   return bcrypt.compare(candidatePassword, userPassword);
+};
+
+userSchema.methods.passwordChanged = async function (JWTiat) {
+  console.log('hello');
+  if (this.passwordChangedAt) {
+    const lastChangeTime =
+      parseInt(this.passwordChangedAt.getTime(), 10) / 1000;
+    if (lastChangeTime >= JWTiat) {
+      return true;
+    }
+  }
+  return false;
 };
 
 const User = mongoose.model('User', userSchema);
