@@ -77,18 +77,19 @@ exports.protect = catchError(async (req, res, next) => {
       )
     );
   }
-
+  req.user = user;
   next();
 });
 
-/* GET TOKEN
+// MIDDLEWARE TO CHECK THE USER'S ROLE
 
-VERIFY THE TOKEN 
-HANDLE INVALID TOKEN
-HANDLE TOKEN EXPIRED
-
-
-VERIFY THAT USER STILL exists
-
-
-VERIFY THAT USER DID NOT CHANGED THE PASSWORD AFTER TOKEN WAS ISSUED */
+exports.checkRole = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      next(
+        new AppError('Your user have no permission to perform this action', 401)
+      );
+    }
+    next();
+  };
+};
