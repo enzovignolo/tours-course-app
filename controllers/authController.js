@@ -93,3 +93,25 @@ exports.checkRole = (...roles) => {
     next();
   };
 };
+
+// Reset Password Functionality
+
+exports.resetPassword = async (req, res, next) => {
+  const { email } = req.body; // get the email from request
+  const user = await User.findOne({ email }); // find the user in the DB.
+
+  if (!user) {
+    ///Check if user stil exists
+    return next(new AppError('Invalid email!', 400));
+  }
+
+  // Generate Random token
+  const resetToken = await user.createResetToken(); // so we only save the reset token and its creation date
+  await user.save({ validateBeforeSave: false });
+  res.json({
+    'reset token': resetToken
+  });
+  // Hash and store the token
+
+  //Send it by email
+};
