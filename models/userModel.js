@@ -89,7 +89,6 @@ userSchema.methods.createResetToken = function () {
     .update(resetToken)
     .digest('hex');
   this.resetTokenExpirationDate = Date.now() + 10 * 60 * 1000; //10 minutes for this oken to expires
-  console.log(this.resetTokenExpirationDate);
   return resetToken;
 };
 
