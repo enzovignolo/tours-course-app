@@ -47,6 +47,10 @@ const userSchema = new mongoose.Schema({
   },
   photo: {
     type: String
+  },
+  active: {
+    type: Boolean,
+    select: false
   }
 });
 
@@ -60,6 +64,14 @@ userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, 12);
   //erasing the password stored on passwordConfirmation field.
   this.passwordConfirmation = undefined;
+  //Set date of last password change
+  this.passwordChangedAt = Date.now();
+  next();
+});
+
+//QUERY MIDDLEWARE TO ONLY SHOW ACTIVE USERS ON QUERIES
+userSchema.pre('find', async function (next) {
+  this.find({ active: true });
   next();
 });
 
@@ -84,6 +96,7 @@ userSchema.methods.passwordChanged = async function (JWTiat) {
 
 userSchema.methods.createResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString('hex');
+  console.log(resetToken);
   this.passwordResetToken = crypto
     .createHash('sha256')
     .update(resetToken)
