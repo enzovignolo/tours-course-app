@@ -25,6 +25,10 @@ router
   .post(usersController.addUser);
 
 router
+  .route('/me')
+  .get(authController.protect, usersController.getMe, usersController.getUser);
+
+router
   .route('/:id')
   .get(usersController.getUser)
   .patch(usersController.updateUser)

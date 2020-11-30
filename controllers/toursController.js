@@ -2,11 +2,13 @@ const Tour = require('./../models/toursModel');
 const APIFeatures = require('./../utils/APIFeatures');
 const AppError = require('./../utils/AppError');
 const catchError = require('./../utils/CatchError');
+const factory = require('./handlerFactory.js');
 //MIDDLEWARE
 
 //CONTROLLERS
 
-exports.getAllTours = catchError(async (req, res, next) => {
+exports.getAllTours = factory.getAll(Tour);
+/* catchError(async (req, res, next) => {
   const queryFeature = new APIFeatures(Tour.find(), req.query)
     .filter()
     .sort()
@@ -18,10 +20,11 @@ exports.getAllTours = catchError(async (req, res, next) => {
     elements: tours.length,
     tours
   });
-});
+}); */
 
-exports.getTour = catchError(async (req, res, next) => {
-  const tour = await Tour.findById(req.params.id);
+exports.getTour = factory.getOne(Tour, { path: 'review' });
+/* catchError(async (req, res, next) => {
+  const tour = await Tour.findById(req.params.id).populate('review');
   console.log(tour);
   if (!tour) {
     return next(new AppError(`Tour with id:${req.params.id} not found`, 404));
@@ -32,7 +35,7 @@ exports.getTour = catchError(async (req, res, next) => {
     data: tour
   });
 });
-
+ */
 exports.addTour = catchError(async (req, res, next) => {
   const tour = await Tour.create(req.body);
   res.status(201).json({
@@ -41,7 +44,9 @@ exports.addTour = catchError(async (req, res, next) => {
   });
 });
 
-exports.updateTour = catchError(async (req, res, next) => {
+exports.updateTour = factory.updateOne(Tour);
+
+/* catchError(async (req, res, next) => {
   const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true
@@ -55,8 +60,9 @@ exports.updateTour = catchError(async (req, res, next) => {
     data: tour
   });
 });
-
-exports.deletTour = catchError(async (req, res, next) => {
+ */
+exports.deletTour = factory.deleteOne(Tour);
+/*  catchError(async (req, res, next) => {
   const tour = await Tour.findByIdAndDelete(req.params.id);
   if (!tour) {
     return next(new AppError(`Tour with id:${req.params.id} not found`, 404));
@@ -66,7 +72,7 @@ exports.deletTour = catchError(async (req, res, next) => {
     data: tour
   });
 });
-
+ */
 exports.getTourStats = async (req, res, next) => {
   try {
     const stats = await Tour.aggregate([

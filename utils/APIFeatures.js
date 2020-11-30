@@ -1,8 +1,8 @@
-const Tour = require('./../models/toursModel');
 class APIFeatures {
-  constructor(query, queryReq) {
+  constructor(query, queryReq, Model) {
     this.query = query;
     this.queryReq = queryReq;
+    this.Model = Model;
   }
   filter() {
     const discardParms = ['sort', 'limit', 'page'];
@@ -14,7 +14,7 @@ class APIFeatures {
     ); //MATCH A REGULAR EXPRESSION AND INSERTS $ for MONGOOSE FILTER PUPOSES
 
     // QUERY OBJECT
-    this.query = Tour.find(JSON.parse(queryStr));
+    this.query = this.Model.find(JSON.parse(queryStr));
     return this;
   }
   sort() {

@@ -1,9 +1,13 @@
 const express = require('express');
-const { route } = require('../app');
 const toursController = require(`${__dirname}/../controllers/toursController`);
 const authController = require('./../controllers/authController');
+const reviewRouter = require('./../routes/reviewsRoutes');
+
 //ROUTES;
 const router = express.Router();
+
+// NESTED ROUTE FOR REVIEWS OF AN SPECIFIC TOUR
+router.use('/:tourId/reviews', reviewRouter);
 
 /* router.param('id', toursController.checkId); */
 
@@ -14,7 +18,7 @@ router
 router
   .route('/')
   .get(authController.protect, toursController.getAllTours)
-  .post(toursController.addTour);
+  .post(authController.protect, toursController.addTour);
 router
   .route('/:id')
   .get(toursController.getTour)

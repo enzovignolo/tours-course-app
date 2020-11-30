@@ -17,7 +17,7 @@ mongoose
   )
   .then(() => console.log('Succesfully connected!'));
 
-const data = JSON.parse(fs.readFileSync(`${__dirname}/tours-simple.json`));
+const data = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`));
 console.log(data);
 const importData = async () => {
   try {

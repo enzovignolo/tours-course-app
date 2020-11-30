@@ -14,19 +14,41 @@ const signToken = (id) => {
   });
 };
 
+const createAndSendToken = (user, res, statusCode) => {
+  const token = signToken(user._id);
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.EXP_COOKIE_TIME * 24 * 60 * 60 * 1000
+    ),
+    secure: true,
+    httpOnly: true
+  };
+  if (process.env.NODE_ENV === 'development') {
+    cookieOptions.secure = false;
+  }
+
+  res.cookie('token', token, cookieOptions);
+  res.status(statusCode).json({
+    status: 'Succesfully logged in',
+    token
+    /* token */
+  });
+};
+
 exports.signUp = catchError(async (req, res, next) => {
   const newUser = await User.create(req.body);
-  const token = jwt.sign({ id: newUser._id }, process.env.SECRET, {
+  /* const token = jwt.sign({ id: newUser._id }, process.env.SECRET, {
     expiresIn: process.env.EXP_TOKEN_TIME
-  });
-  res.status(201).json({
+  }); */
+  createAndSendToken(newUser._id, res, 201);
+  /* res.status(201).json({
     status: 'User Created!',
     token,
     name: newUser.name,
     password: newUser.password,
     passwordConfirmation: newUser.passwordConfirmation,
     email: newUser.email
-  });
+  }); */
 });
 
 exports.logIn = catchError(async (req, res, next) => {
@@ -44,15 +66,17 @@ exports.logIn = catchError(async (req, res, next) => {
     return next(new AppError('Invalid email or password', 401));
   }
 
-  const token = signToken(user._id);
+  /* const token = signToken(user._id);
   res.status(201).json({
     status: 'Succesfully logged in',
     token
-  });
+  }); */
+  createAndSendToken(user._id, res, 201);
 });
 
 exports.protect = catchError(async (req, res, next) => {
   //GET TOKEN
+
   if (!req.headers.authorization) {
     return next(new AppError('Please provide a token', 400));
   }
@@ -135,7 +159,7 @@ exports.forgotPassword = async (req, res, next) => {
 
 exports.resetPassword = catchError(async (req, res, next) => {
   // First we encrypt the token to find it in our DB
-  console.log(req.params.token);
+
   const resetToken = crypto
     .createHash('sha256')
     .update(req.params.token)
@@ -155,11 +179,12 @@ exports.resetPassword = catchError(async (req, res, next) => {
   user.resetTokenExpirationDate = undefined;
   user.save();
   //LOG IN THE USER
-  const token = signToken(user._id);
+  /* const token = signToken(user._id);
   res.status(201).json({
     status: 'Succesfully logged in',
     token
-  });
+  }); */
+  createAndSendToken(user._id, res, 201);
 });
 
 exports.updatePassword = catchError(async (req, res, next) => {
@@ -192,9 +217,9 @@ exports.updatePassword = catchError(async (req, res, next) => {
   user.password = req.body.newPassword;
   user.passwordConfirmation = req.body.passwordConfirmation;
   user.save({});
-  const newToken = signToken(user._id);
+  /* const newToken = signToken(user._id);
   res.status(201).json({
-    status: 'Password updated! Succesfully logged in',
     token: newToken
-  });
+  }); */
+  createAndSendToken(user._id, res, 201);
 });
