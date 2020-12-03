@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     required: true,
-    enum: ['user', 'guide', 'guide-lead', 'admin'],
+    enum: ['user', 'guide', 'lead-guide', 'admin'],
     message: 'Invalid role. Should be user,guide,guide-lead or admin'
   },
   passwordConfirmation: {

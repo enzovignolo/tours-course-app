@@ -1,4 +1,6 @@
 //jshint esversion:6
+
+///// DEPENDENCIES //////
 const express = require('express');
 const morgan = require('morgan');
 const tourRouter = require(`${__dirname}/routes/toursRoutes`);
@@ -11,18 +13,24 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 
+////////////////////////////
+
 const app = express();
 app.use(
   express.json({
+    //THIS IS MIDDLEWARE.. the option in the body parser, limits the payload sent in the request
     limit: '10kb'
   })
-); //THIS IS MIDDLEWARE.. the option in the body parser, limits the payload sent in the request
+);
 
+// MIDDLEWARE TO SANITIZE AND PROTECT FROM DATA SENT FROM USER
 app.use(mongoSanitize());
 app.use(xss());
 
+// SECURITY HEADERS
 app.use(helmet());
 
+//SOME DEBUGGING FEATURE
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
@@ -35,6 +43,7 @@ const limiter = rateLimit({
 });
 
 app.use('/api', limiter);
+
 //ROUTE HANDLERS
 
 app.use('/api/v1/tours', tourRouter);
@@ -45,10 +54,6 @@ app.use('/api/v1/reviews', reviewsRouter);
 
 app.all('*', (req, res, next) => {
   const missRoute = req.originalUrl;
-  /* const error = new Error();
-  error.status = 'Fail';
-  error.statusCode = 404;
-  error.message = `${missRoute} not defined on the server`; */
   next(new AppError(`${missRoute} not defined on the server`, 400));
 });
 

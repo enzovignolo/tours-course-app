@@ -64,7 +64,7 @@ exports.getAll = (Model) =>
     const doc = await queryFeature.query;
     res.status(200).json({
       status: 'success',
-      elements: doc.length,
+      results: doc.length,
       doc
     });
   });

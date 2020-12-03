@@ -3,16 +3,9 @@ const catchError = require('./../utils/CatchError');
 const factory = require('./handlerFactory');
 
 exports.getAllReviews = factory.getAll(Review);
-/*catchError(async (req, res, next) => {
-  let filter = {};
-  if (req.params.tourId) filter = { tour: req.params.tourId };
-  const reviews = await Review.find(filter);
-  res.status(200).json({
-    status: 'Success',
-    results: reviews.length,
-    reviews
-  });
-}); */
+exports.getReview = factory.getOne(Review);
+exports.deleteReview = factory.deleteOne(Review);
+exports.updateReview = factory.updateOne(Review);
 
 exports.addReview = catchError(async (req, res, next) => {
   if (!req.body.tour) req.body.tour = req.params.tourId; // if the tour id is not specified in the body, look for it in the URL parameters.
@@ -24,7 +17,3 @@ exports.addReview = catchError(async (req, res, next) => {
     reviews: newReview
   });
 });
-
-exports.getReview = factory.getOne(Review);
-exports.deleteReview = factory.deleteOne(Review);
-exports.updateReview = factory.updateOne(Review);

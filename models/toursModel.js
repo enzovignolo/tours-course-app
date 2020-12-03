@@ -127,6 +127,8 @@ tourSchema.virtual('review', {
   next();
 }); */
 
+tourSchema.index({ price: -1 });
+
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;

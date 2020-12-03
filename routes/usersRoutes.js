@@ -1,11 +1,13 @@
+///// DEPENDENCIES ////
 const express = require('express');
-const { route } = require('../app');
 const usersController = require(`../controllers/usersController`);
 const authController = require('./../controllers/authController');
 const router = express.Router();
 
+////////////////////////
+
 router.post('/sign-up', authController.signUp);
-router.post('/logIn', authController.logIn);
+router.post('/log-in', authController.logIn);
 
 router.post('/forgot-password', authController.forgotPassword);
 router.patch('/reset-password/:token', authController.resetPassword);
@@ -30,8 +32,16 @@ router
 
 router
   .route('/:id')
-  .get(usersController.getUser)
-  .patch(usersController.updateUser)
+  .get(
+    authController.protect,
+    authController.checkRole('admin'),
+    usersController.getUser
+  )
+  .patch(
+    authController.protect,
+    authController.checkRole('admin'),
+    usersController.updateUser
+  )
   .delete(
     authController.protect,
     authController.checkRole('admin'),

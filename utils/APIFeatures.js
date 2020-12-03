@@ -9,11 +9,12 @@ class APIFeatures {
     const queryObj = { ...this.queryReq };
     discardParms.forEach((el) => delete queryObj[el]); // THIS FILTER RESERVED KEYWORDS PASS ON THE QUERY FOR FUTURE METHODS LIKE SORTING, LIMIT OR PAGINATIONS
     const queryStr = JSON.stringify(queryObj).replace(
-      /\bgte|gt|lt|lte\b/g,
+      /\bgte|gt|lte\b/g,
       (match) => `$${match}`
     ); //MATCH A REGULAR EXPRESSION AND INSERTS $ for MONGOOSE FILTER PUPOSES
 
     // QUERY OBJECT
+    console.log(JSON.parse(queryStr));
     this.query = this.Model.find(JSON.parse(queryStr));
     return this;
   }

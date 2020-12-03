@@ -3,6 +3,8 @@ dotEnv.config({ path: './config.env' });
 const mongoose = require('mongoose');
 const Tour = require('../../models/toursModel');
 const fs = require('fs');
+const Review = require('../../models/reviewModel');
+const User = require('../../models/userModel');
 
 const db = process.env.DATABASE_REMOTE;
 
@@ -17,11 +19,14 @@ mongoose
   )
   .then(() => console.log('Succesfully connected!'));
 
-const data = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`));
-console.log(data);
+const tour = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`));
+const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`));
+const reviews = JSON.parse(fs.readFileSync(`${__dirname}/reviews.json`));
 const importData = async () => {
   try {
-    await Tour.create(data);
+    await Tour.create(tour);
+    await Review.create(reviews);
+    await User.create(users);
     console.log('Data improted!');
   } catch (error) {
     console.log(error);
@@ -33,6 +38,8 @@ const deleteData = async () => {
   /* THIS DELETE THE WHOLE COLLECTION OF DATA */
   try {
     await Tour.deleteMany();
+    await Review.deleteMany();
+    await User.deleteMany();
     console.log('DATA DELETED !');
   } catch (error) {
     console.log('There was an error');
