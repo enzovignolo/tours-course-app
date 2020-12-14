@@ -23,6 +23,7 @@
     "express-mongo-sanitize": "^2.0.0",
     "express-rate-limit": "^5.2.3",
     "helmet": "^4.2.0",
+    "html-to-text": "^6.0.0",
     "jsonwebtoken": "^8.5.1",
     "login": "^0.8.0",
     "mapbox": "^1.0.0-beta10",
