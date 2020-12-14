@@ -46,7 +46,8 @@ const userSchema = new mongoose.Schema({
     type: Date
   },
   photo: {
-    type: String
+    type: String,
+    default: 'default.jpg'
   },
   active: {
     type: Boolean,
@@ -64,11 +65,16 @@ userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, 12);
   //erasing the password stored on passwordConfirmation field.
   this.passwordConfirmation = undefined;
-  //Set date of last password change
-  this.passwordChangedAt = Date.now();
+
   next();
 });
-
+userSchema.pre('save', function (next) {
+  if (!this.isModified || this.isNew) {
+    return next();
+  }
+  this.passwordChangedAt = Date.now() - 3000;
+  next();
+});
 //QUERY MIDDLEWARE TO ONLY SHOW ACTIVE USERS ON QUERIES
 userSchema.pre('find', async function (next) {
   this.find({ active: true });
@@ -83,11 +89,11 @@ userSchema.methods.comparePassword = async (
 };
 
 userSchema.methods.passwordChanged = async function (JWTiat) {
-  console.log('hello');
   if (this.passwordChangedAt) {
     const lastChangeTime =
       parseInt(this.passwordChangedAt.getTime(), 10) / 1000;
-    if (lastChangeTime >= JWTiat) {
+    console.log(lastChangeTime > JWTiat);
+    if (lastChangeTime > JWTiat) {
       return true;
     }
   }

@@ -1,27 +1,49 @@
 const AppError = require('../utils/AppError');
 
-const sendErrorDev = (err, res) => {
-  console.log('hola');
+const sendErrorDev = (err, req, res) => {
   const statusCode = err.statusCode || 500;
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-    name: err.name,
-    error: err,
-    stack: err.stack
-  });
-};
-const sendErrorProd = (err, res) => {
-  if (err.isOperational) {
+  //API ERRORS
+  if (req.originalUrl.startsWith('/api')) {
     res.status(err.statusCode).json({
       status: err.status,
-      message: err.message
+      message: err.message,
+      name: err.name,
+      error: err,
+      stack: err.stack
     });
   } else {
-    res.status(500).json({
-      status: 'Error',
-      message: 'Something went wrong...'
+    // WEB ERRORS
+    res.status(statusCode).render('error', {
+      title: 'Something went wrong',
+      msg: err.message
     });
+  }
+};
+const sendErrorProd = (err, req, res) => {
+  if (req.originalUrl.startsWith('/api')) {
+    if (err.isOperational) {
+      res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message
+      });
+    } else {
+      res.status(500).json({
+        status: 'Error',
+        message: 'Something went wrong...'
+      });
+    }
+  } else {
+    if (err.isOperational) {
+      res.status(err.statusCode).render('error', {
+        title: 'Something went wrong',
+        msg: err.message
+      });
+    } else {
+      res.status(500).render('error', {
+        title: 'Something went wrong',
+        msg: 'Something went wrong...'
+      });
+    }
   }
 };
 const handleCastErrorDB = (err) => {
@@ -59,19 +81,17 @@ module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
   err.message = err.message;
-  
 
   if (process.env.NODE_ENV === 'development') {
-    sendErrorDev(err, res);
+    sendErrorDev(err, req, res);
   } else if (process.env.NODE_ENV === 'production') {
     // HERE WE CLONE THE ERR OBJECT, THAT HAVE CERTAIN NON ENNUMERABLE PROPERTIES
-    let error ={};
-    Object.getOwnPropertyNames(err).forEach(function(property) {
-      error[property]=err[property];
+    let error = {};
+    Object.getOwnPropertyNames(err).forEach(function (property) {
+      error[property] = err[property];
     });
     console.log(error);
-  
-    err.message = 'ghola';
+
     if (err.name === 'CastError') {
       error = handleCastErrorDB(error);
     }
@@ -88,6 +108,6 @@ module.exports = (err, req, res, next) => {
       error = handleTokenExpiration(error);
     }
 
-    sendErrorProd(error, res);
+    sendErrorProd(error, req, res);
   }
 };

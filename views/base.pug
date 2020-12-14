@@ -1,0 +1,29 @@
+doctype html
+html
+    head
+        title Natours App | #{title}
+        block head
+        meta(charset='UTF-8')
+        meta(name='viewport' content='width=device-width, initial-scale=1.0')
+        meta(http-equiv="Content-Security-Policy" content="default-src data: ws: *; style-src 'self' http://* https://* blob: 'unsafe-inline'; script-src 'self' http://* https://* 'unsafe-inline' blob: 'unsafe-eval'" )
+
+        link(href='https://fonts.googleapis.com/css?family=Lato:300,300i,700' rel='stylesheet')
+        link(rel='stylesheet' href="/css/style.css")
+        link(rel='shortcut icon' type='/image/png' href='/img/favicon.png')
+        
+
+    body
+        include _header
+
+        block content
+            h1 This is a place holder
+        include _footer
+        //script(src="/js/mapbox.js")
+        script(src="/js/bundle.js")
+
+       
+
+
+
+
+    

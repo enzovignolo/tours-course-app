@@ -1,5 +1,6 @@
-const mongoose = require('mongoose');
 const User = require('./userModel');
+const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -9,6 +10,7 @@ const tourSchema = new mongoose.Schema(
       unique: true,
       trim: true
     },
+    slug: String,
     duration: {
       type: Number,
       required: [true, 'Must have a duration']
@@ -95,7 +97,7 @@ const tourSchema = new mongoose.Schema(
     guides: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: 'Users'
+        ref: 'User'
       }
     ]
   },
@@ -110,25 +112,29 @@ tourSchema.virtual('durationInWeeks').get(function () {
 });
 
 //Virtual populating with reviews
-tourSchema.virtual('review', {
+tourSchema.virtual('reviews', {
   ref: 'Review',
   foreignField: 'tour',
   localField: '_id'
 });
 
 //Tour middleware
-/* tourSchema.pre('save', async function (next) {
-  console.log(this.guides);
+tourSchema.pre('save', async function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  /*  console.log(this.guides);
   const guidesPromises = this.guides.map(async (id) => {
     return await User.findById(id);
   });
   this.guides = await Promise.all(guidesPromises);
-  console.log(this.guides);
+  console.log(this.guides); */
   next();
-}); */
-
+});
+tourSchema.pre(/^find/, async function (next) {
+  this.populate({ path: 'guides', select: 'name photo _id role' });
+  next();
+});
 tourSchema.index({ price: -1 });
-
+tourSchema.index({ startLocation: '2dsphere' });
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;

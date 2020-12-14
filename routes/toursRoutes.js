@@ -11,6 +11,14 @@ const router = express.Router();
 // NESTED ROUTE FOR REVIEWS OF AN SPECIFIC TOUR
 router.use('/:tourId/reviews', reviewRouter);
 
+//THIS ENDPOINT GETS ALL TOURS IN A CERTAIN RADIUS FROM A CENTER POINT DEFINED
+router
+  .route('/tours-whithin/:distance/center/:longlat/units/:unit')
+  .get(toursController.getToursNear);
+
+// THIS ENDPOINT CALCULATE DISTANCE TO ALL TOURS AVAILABLES
+router.route('/distance/:longlat/units/:unit').get(toursController.getDistance);
+
 router.route('/tour-stats').get(toursController.getTourStats);
 router
   .route('/tour-stats/monthly-stats/:year')
@@ -20,12 +28,15 @@ router
   .get(toursController.getTour)
   .patch(
     authController.protect,
-    authController.checkRole('admin'),
+    authController.checkRole('admin', 'lead-guide'),
+    toursController.uploadTourImages,
+    toursController.resizeTourImages,
     toursController.updateTour
   )
   .delete(
     authController.protect,
-    authController.checkRole('admin'),
+    authController.checkRole('admin', 'lead-guide'),
+
     toursController.deletTour
   );
 router

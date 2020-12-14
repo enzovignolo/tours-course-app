@@ -172,21 +172,21 @@
       <div class="picture-box">
         <img
           class="picture-box__img picture-box__img--1"
-          src="img/tour-5-1.jpg"
+          src="/img/tour-5-1.jpg"
           alt="The Park Camper Tour 1"
         />
       </div>
       <div class="picture-box">
         <img
           class="picture-box__img picture-box__img--2"
-          src="img/tour-5-2.jpg"
+          src="/img/tour-5-2.jpg"
           alt="The Park Camper Tour 1"
         />
       </div>
       <div class="picture-box">
         <img
           class="picture-box__img picture-box__img--3"
-          src="img/tour-5-3.jpg"
+          src="/img/tour-5-3.jpg"
           alt="The Park Camper Tour 1"
         />
       </div>
@@ -252,7 +252,7 @@
 
         const bounds = new mapboxgl.LngLatBounds();
 
-        geojson.features.forEach(function(marker) {
+        geojson.features.forEach(function (marker) {
           var el = document.createElement('div');
           el.className = 'marker';
 
@@ -283,7 +283,7 @@
           }
         });
 
-        map.on('load', function() {
+        map.on('load', function () {
           map.addLayer({
             id: 'route',
             type: 'line',

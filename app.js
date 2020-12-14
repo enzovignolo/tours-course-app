@@ -2,15 +2,19 @@
 
 ///// DEPENDENCIES //////
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
-const tourRouter = require(`${__dirname}/routes/toursRoutes`);
-const userRouter = require(`${__dirname}/routes/usersRoutes`);
-const reviewsRouter = require(`${__dirname}/routes/reviewsRoutes`);
+const path = require('path');
+const tourRouter = require(path.join(__dirname, 'routes/toursRoutes'));
+const userRouter = require(path.join(__dirname, 'routes/usersRoutes'));
+const reviewsRouter = require(path.join(__dirname, 'routes/reviewsRoutes'));
+const viewsRouter = require(path.join(__dirname, 'routes/viewsRoutes'));
 const errorController = require('./controllers/errorController');
 const AppError = require('./utils/AppError');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
+const cors = require('cors');
 const xss = require('xss-clean');
 
 ////////////////////////////
@@ -22,14 +26,40 @@ app.use(
     limit: '10kb'
   })
 );
+app.use(
+  express.urlencoded({
+    extended: true,
+    limit: '10kb'
+  })
+);
+
+app.use(cookieParser());
 
 // MIDDLEWARE TO SANITIZE AND PROTECT FROM DATA SENT FROM USER
 app.use(mongoSanitize());
 app.use(xss());
 
+//ENABLE CORS
+app.use(cors());
 // SECURITY HEADERS
-app.use(helmet());
+//app.use(helmet());
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'", 'https:', 'http:', 'data:', 'ws:'],
+      baseUri: ["'self'"],
+      fontSrc: ["'self'", 'https:', 'http:', 'data:'],
+      scriptSrc: ["'self'", 'https:', 'http:', 'blob:'],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https:', 'http:']
+    }
+  })
+);
 
+//  VIEW
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
+//
 //SOME DEBUGGING FEATURE
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
@@ -45,6 +75,8 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 //ROUTE HANDLERS
+
+app.use('/', viewsRouter);
 
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);

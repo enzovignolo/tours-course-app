@@ -1,18 +1,31 @@
 ///// DEPENDENCIES ////
 const express = require('express');
+const multer = require('multer');
 const usersController = require(`../controllers/usersController`);
 const authController = require('./../controllers/authController');
+/////
+//MIDDLEWARE
+
+const upload = multer({ dest: 'public/img/users' });
+
 const router = express.Router();
 
 ////////////////////////
 
 router.post('/sign-up', authController.signUp);
 router.post('/log-in', authController.logIn);
+router.get('/log-out', authController.logOut);
 
 router.post('/forgot-password', authController.forgotPassword);
 router.patch('/reset-password/:token', authController.resetPassword);
 
-router.patch('/update-user', authController.protect, usersController.updateMe);
+router.patch(
+  '/update-user',
+  authController.protect,
+  usersController.uploadUserPhoto,
+  usersController.resizeUserPhoto,
+  usersController.updateMe
+);
 router.delete('/delete-user', authController.protect, usersController.deleteMe);
 
 router.patch(
@@ -29,7 +42,6 @@ router
 router
   .route('/me')
   .get(authController.protect, usersController.getMe, usersController.getUser);
-
 router
   .route('/:id')
   .get(

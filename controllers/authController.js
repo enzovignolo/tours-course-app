@@ -29,7 +29,7 @@ const createAndSendToken = (user, res, statusCode) => {
 
   res.cookie('token', token, cookieOptions);
   res.status(statusCode).json({
-    status: 'Succesfully logged in',
+    status: 'success',
     token
     /* token */
   });
@@ -76,10 +76,15 @@ exports.logIn = catchError(async (req, res, next) => {
 
 exports.protect = catchError(async (req, res, next) => {
   //GET TOKEN
+  //from web
+  if (req.cookies) {
+    req.headers.authorization = 'Bearer ' + req.cookies.token;
+  }
 
   if (!req.headers.authorization) {
     return next(new AppError('Please provide a token', 400));
   }
+  console.log(req.headers.authorization);
   const token = req.headers.authorization.split(' ')[1];
   const { email } = req.body;
 
@@ -104,6 +109,7 @@ exports.protect = catchError(async (req, res, next) => {
     );
   }
   req.user = user;
+  res.locals.user = user;
   next();
 });
 
@@ -188,23 +194,12 @@ exports.resetPassword = catchError(async (req, res, next) => {
 });
 
 exports.updatePassword = catchError(async (req, res, next) => {
-  //GET THE USER FROM COLLECTION
-  /* const token = req.headers.authorization.split(' ')[1];
-  console.log(token);
-  const verifiedToken = await promisify(jwt.verify)(token, process.env.SECRET); */
-
   const user = await User.findById(req.user.id).select('+password');
-  //CHEKC IF THE USER EXISTS
-  if (!user) {
-    return next(new AppError('User does not exist', 400));
-  }
+
   // VERIFY USER PASSWORD
   const oldPassword = req.body.password;
   if (!(await user.comparePassword(oldPassword, user.password))) {
     return next(new AppError('Password not correct, log in again!'), 401);
-    /*  } catch (err) {
-      return next(new AppError('Something went wrong', 500));
-    } */
   }
   if (!(req.body.newPassword === req.body.passwordConfirmation)) {
     return next(
@@ -216,10 +211,51 @@ exports.updatePassword = catchError(async (req, res, next) => {
   }
   user.password = req.body.newPassword;
   user.passwordConfirmation = req.body.passwordConfirmation;
-  user.save({});
-  /* const newToken = signToken(user._id);
-  res.status(201).json({
-    token: newToken
-  }); */
-  createAndSendToken(user._id, res, 201);
+  await user.save({});
+
+  //LOGIN AGAIN
+  createAndSendToken(user._id, res, 200);
 });
+
+//CHECK IF USER IS LOGGED IN FROM WEB ACCESS
+exports.isLoggedIn = async (req, res, next) => {
+  //GET TOKEN
+  try {
+    if (req.cookies.token) {
+      const token = req.cookies.token;
+
+      // VERIFY TOKEN
+
+      const verifiedToken = await promisify(jwt.verify)(
+        token,
+        process.env.SECRET
+      );
+      // CHECK IF USER STILL EXISTs
+      const user = await User.findById(verifiedToken.id);
+
+      if (!user) {
+        return next();
+      }
+      // CHECK IF USER CHANGED PASSWORD AFTER TOKEN WAS ISSUED
+
+      if (await user.passwordChanged(verifiedToken.iat)) {
+        return next();
+      }
+      res.locals.user = user;
+      return next();
+    }
+    next();
+  } catch (err) {
+    return next();
+  }
+};
+
+exports.logOut = (req, res, next) => {
+  res.cookie('token', 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true
+  });
+  res.status(200).json({
+    status: 'success'
+  });
+};
