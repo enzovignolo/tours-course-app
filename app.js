@@ -9,6 +9,8 @@ const tourRouter = require(path.join(__dirname, 'routes/toursRoutes'));
 const userRouter = require(path.join(__dirname, 'routes/usersRoutes'));
 const reviewsRouter = require(path.join(__dirname, 'routes/reviewsRoutes'));
 const viewsRouter = require(path.join(__dirname, 'routes/viewsRoutes'));
+const bookingsRouter = require(path.join(__dirname, 'routes/bookingsRoutes'));
+
 const errorController = require('./controllers/errorController');
 const AppError = require('./utils/AppError');
 const rateLimit = require('express-rate-limit');
@@ -81,6 +83,7 @@ app.use('/', viewsRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewsRouter);
+app.use('/api/v1/bookings', bookingsRouter);
 
 // ERROR HANDLING ON ANY ROUTE THAT DOES NOT MATCH ABOVE ONES
 

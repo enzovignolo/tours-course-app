@@ -5,7 +5,7 @@ const AppError = require('../utils/AppError');
 const { promisify } = require('util');
 const { token } = require('morgan');
 const { exists } = require('./../models/userModel');
-const sendMail = require('../utils/EmailSender');
+const Email = require('../utils/EmailSender');
 const crypto = require('crypto');
 
 const signToken = (id) => {
@@ -37,18 +37,10 @@ const createAndSendToken = (user, res, statusCode) => {
 
 exports.signUp = catchError(async (req, res, next) => {
   const newUser = await User.create(req.body);
-  /* const token = jwt.sign({ id: newUser._id }, process.env.SECRET, {
-    expiresIn: process.env.EXP_TOKEN_TIME
-  }); */
+  const url = `${req.protocol}://${req.get('host')}/me`;
+  await new Email(newUser, url).sendWelcome();
+
   createAndSendToken(newUser._id, res, 201);
-  /* res.status(201).json({
-    status: 'User Created!',
-    token,
-    name: newUser.name,
-    password: newUser.password,
-    passwordConfirmation: newUser.passwordConfirmation,
-    email: newUser.email
-  }); */
 });
 
 exports.logIn = catchError(async (req, res, next) => {
@@ -144,12 +136,15 @@ exports.forgotPassword = async (req, res, next) => {
   const url = `${req.protocol}://${req.host}:${process.env.PORT}/api/v1/users/reset-password/${resetToken}`;
 
   try {
-    const mailOptions = {
+    /* const mailOptions = {
       to: user.email,
       subject: 'Reset Password - 10 minutes expirations',
       message: `To reset passowrd please submit a PATCH request to ${url} with the new password and password confirmation`
     };
     await sendMail(mailOptions);
+    */
+    await new Email(user, url).sendPasswordReset();
+
     res.status(200).json({
       status: 'Email was sent!'
     });
