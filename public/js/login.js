@@ -9,6 +9,7 @@ export const login = async (email, password) => {
       data: { email, password }
     });
 
+    console.log('here');
     console.log(res);
     if (res.data.status === 'success') {
       showAlert('success', 'Succesfully logged in');

@@ -8469,6 +8469,7 @@ var login = /*#__PURE__*/function () {
 
           case 3:
             res = _context.sent;
+            console.log('here');
             console.log(res);
 
             if (res.data.status === 'success') {
@@ -8478,20 +8479,20 @@ var login = /*#__PURE__*/function () {
               }, 1500);
             }
 
-            _context.next = 11;
+            _context.next = 12;
             break;
 
-          case 8:
-            _context.prev = 8;
+          case 9:
+            _context.prev = 9;
             _context.t0 = _context["catch"](0);
             (0, _alert.showAlert)('error', _context.t0.response.data.message);
 
-          case 11:
+          case 12:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 8]]);
+    }, _callee, null, [[0, 9]]);
   }));
 
   return function login(_x, _x2) {
@@ -8674,6 +8675,8 @@ exports.bookTour = void 0;
 
 var _axios = _interopRequireDefault(require("axios"));
 
+var _alert = require("./alert");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -8689,22 +8692,36 @@ var bookTour = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
+            _context.prev = 0;
             // Get session from the server
             console.log(tourID);
-            _context.next = 3;
+            _context.next = 4;
             return (0, _axios.default)("http://127.0.0.1:8000/api/v1/bookings/checkout-session/".concat(tourID));
 
-          case 3:
+          case 4:
             session = _context.sent;
-            // Create checkout form + charge de creditcard
-            console.log(session);
+            console.log(session); // Create checkout form + charge de creditcard
 
-          case 5:
+            _context.next = 8;
+            return stripe.redirectToCheckout({
+              sessionId: session.data.session.id
+            });
+
+          case 8:
+            _context.next = 13;
+            break;
+
+          case 10:
+            _context.prev = 10;
+            _context.t0 = _context["catch"](0);
+            (0, _alert.showAlert)('error', _context.t0);
+
+          case 13:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee);
+    }, _callee, null, [[0, 10]]);
   }));
 
   return function bookTour(_x) {
@@ -8713,7 +8730,7 @@ var bookTour = /*#__PURE__*/function () {
 }();
 
 exports.bookTour = bookTour;
-},{"axios":"../../node_modules/axios/index.js"}],"index.js":[function(require,module,exports) {
+},{"axios":"../../node_modules/axios/index.js","./alert":"alert.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 require("core-js/modules/es6.array.copy-within");
@@ -8996,7 +9013,8 @@ var loginForm = document.querySelector('.form--login');
 var logOutBtn = document.querySelector('.nav__el--logout');
 var updateUserBtn = document.querySelector('.form-user-data');
 var updatePasswordBtn = document.querySelector('.form-user-password');
-var bookBtn = document.getElementById('book-tour'); // MAP FUNCTIONS
+var bookBtn = document.getElementById('book-tour');
+console.log(logOutBtn); // MAP FUNCTIONS
 
 if (mapBox) {
   var locations = JSON.parse(mapBox.dataset.locations);
@@ -9118,7 +9136,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60355" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51089" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

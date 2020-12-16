@@ -12,7 +12,7 @@ const logOutBtn = document.querySelector('.nav__el--logout');
 const updateUserBtn = document.querySelector('.form-user-data');
 const updatePasswordBtn = document.querySelector('.form-user-password');
 const bookBtn = document.getElementById('book-tour');
-
+console.log(logOutBtn);
 // MAP FUNCTIONS
 
 if (mapBox) {

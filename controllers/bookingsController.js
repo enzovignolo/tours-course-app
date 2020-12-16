@@ -1,9 +1,10 @@
-const Tour = require('./../models/toursModel');
-const APIFeatures = require('./../utils/APIFeatures');
+const Tour = require('../models/toursModel');
+const APIFeatures = require('../utils/APIFeatures');
 const AppError = require('./../utils/AppError');
-const catchError = require('./../utils/CatchError');
+const catchError = require('../utils/CatchError');
 const stripe = require('stripe')(process.env.STRIPE_SECRETKEY);
 const factory = require('./handlerFactory.js');
+const Booking = require('../models/bookingModel');
 
 exports.getBooking = (req, res, next) => {
   res.status(200).json({
@@ -18,8 +19,10 @@ exports.getCheckOutSession = catchError(async (req, res, next) => {
   //Create checkoutsession
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
-    success_url: `${req.protocol}://${req.get('hos')}/`,
-    cancel_url: `${req.protocol}://${req.get('hos')}/tour/${tour.slug}`,
+    success_url: `${req.protocol}://${req.get('host')}/?tour=${
+      req.params.tourID
+    }&user=${req.user.id}&price=${tour.price}`,
+    cancel_url: `${req.protocol}://${req.get('host')}/tour/${tour.slug}`,
     customer_email: req.user.email,
     client_reference_id: req.params.tourID,
     line_items: [
@@ -38,4 +41,15 @@ exports.getCheckOutSession = catchError(async (req, res, next) => {
     data: 'Success',
     session
   });
+});
+
+exports.createBookingCheckOut = catchError(async (req, res, next) => {
+  // Extract data for create the booking
+  const { tour, user, price } = req.query;
+  if (!tour && !user && !price) return next();
+  //Create a booking
+  await Booking.create({ tour, user, price });
+
+  //Redirect to the overview page
+  res.redirect(req.originalUrl.split('?')[0]);
 });

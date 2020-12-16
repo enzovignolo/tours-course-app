@@ -47,6 +47,7 @@ exports.logIn = catchError(async (req, res, next) => {
   //get the information from the body
   const { email, password } = req.body;
   //look for the user with that emai;
+  console.log('loggin in');
   const user = await User.findOne({ email }).select('+password');
 
   //check if user and password were passed..
@@ -58,11 +59,6 @@ exports.logIn = catchError(async (req, res, next) => {
     return next(new AppError('Invalid email or password', 401));
   }
 
-  /* const token = signToken(user._id);
-  res.status(201).json({
-    status: 'Succesfully logged in',
-    token
-  }); */
   createAndSendToken(user._id, res, 201);
 });
 
@@ -186,6 +182,7 @@ exports.resetPassword = catchError(async (req, res, next) => {
     token
   }); */
   createAndSendToken(user._id, res, 201);
+  next();
 });
 
 exports.updatePassword = catchError(async (req, res, next) => {
@@ -218,7 +215,6 @@ exports.isLoggedIn = async (req, res, next) => {
   try {
     if (req.cookies.token) {
       const token = req.cookies.token;
-
       // VERIFY TOKEN
 
       const verifiedToken = await promisify(jwt.verify)(
