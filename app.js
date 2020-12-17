@@ -23,6 +23,8 @@ const compression = require('compression');
 ////////////////////////////
 
 const app = express();
+app.enable('trust proxy');
+
 app.use(
   express.json({
     //THIS IS MIDDLEWARE.. the option in the body parser, limits the payload sent in the request
