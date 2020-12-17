@@ -21,7 +21,7 @@ mongoose
   .then(() => console.log('Connected to the DB! '));
 
 // OPEN SERVER
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 
