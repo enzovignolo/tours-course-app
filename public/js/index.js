@@ -12,7 +12,6 @@ const logOutBtn = document.querySelector('.nav__el--logout');
 const updateUserBtn = document.querySelector('.form-user-data');
 const updatePasswordBtn = document.querySelector('.form-user-password');
 const bookBtn = document.getElementById('book-tour');
-console.log(logOutBtn);
 // MAP FUNCTIONS
 
 if (mapBox) {
@@ -35,7 +34,6 @@ if (loginForm) {
 if (logOutBtn) {
   logOutBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    console.log('logging out');
     logout();
   });
 }
@@ -48,9 +46,7 @@ if (updateUserBtn) {
     form.append('name', document.getElementById('name').value); //grab name
     form.append('email', document.getElementById('email').value); // grab email
     form.append('photo', document.getElementById('photo').files[0]); // grab photo
-    console.log(form);
-    //const email = document.getElementById('email').value;
-    //const name = document.getElementById('name').value;
+
     updateUserSettings(form, 'data');
   });
 }
@@ -79,7 +75,7 @@ if (bookBtn) {
   bookBtn.addEventListener('click', (e) => {
     e.target.textContent = 'Processing...';
     const tourID = e.target.dataset.tourid;
-    console.log(e.target);
+
     bookTour(tourID);
   });
 }

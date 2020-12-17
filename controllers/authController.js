@@ -47,7 +47,6 @@ exports.logIn = catchError(async (req, res, next) => {
   //get the information from the body
   const { email, password } = req.body;
   //look for the user with that emai;
-  console.log('loggin in');
   const user = await User.findOne({ email }).select('+password');
 
   //check if user and password were passed..
@@ -72,7 +71,6 @@ exports.protect = catchError(async (req, res, next) => {
   if (!req.headers.authorization) {
     return next(new AppError('Please provide a token', 400));
   }
-  console.log(req.headers.authorization);
   const token = req.headers.authorization.split(' ')[1];
   const { email } = req.body;
 

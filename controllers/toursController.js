@@ -31,7 +31,6 @@ exports.uploadTourImages = upload.fields([
 exports.resizeTourImages = catchError(async (req, res, next) => {
   if (!req.files.imageCover || !req.files.images) return next();
   req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
-  console.log(req.files);
   //1)Cover image
   await sharp(req.files.imageCover[0].buffer)
     .resize(2000, 1333)
@@ -130,7 +129,6 @@ exports.getToursNear = catchError(async (req, res, next) => {
   const { distance, longlat, unit } = req.params;
   const [long, lat] = longlat.split(',');
   const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
-  console.log(long, lat, radius);
   const tour = await Tour.find({
     startLocation: {
       $geoWithin: {

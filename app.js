@@ -18,6 +18,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const cors = require('cors');
 const xss = require('xss-clean');
+const compression = require('compression');
 
 ////////////////////////////
 
@@ -36,6 +37,10 @@ app.use(
 );
 
 app.use(cookieParser());
+
+//Compreess responses
+
+app.use(compression());
 
 // MIDDLEWARE TO SANITIZE AND PROTECT FROM DATA SENT FROM USER
 app.use(mongoSanitize());

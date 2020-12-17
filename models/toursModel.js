@@ -121,12 +121,7 @@ tourSchema.virtual('reviews', {
 //Tour middleware
 tourSchema.pre('save', async function (next) {
   this.slug = slugify(this.name, { lower: true });
-  /*  console.log(this.guides);
-  const guidesPromises = this.guides.map(async (id) => {
-    return await User.findById(id);
-  });
-  this.guides = await Promise.all(guidesPromises);
-  console.log(this.guides); */
+
   next();
 });
 tourSchema.pre(/^find/, async function (next) {

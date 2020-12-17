@@ -92,7 +92,6 @@ userSchema.methods.passwordChanged = async function (JWTiat) {
   if (this.passwordChangedAt) {
     const lastChangeTime =
       parseInt(this.passwordChangedAt.getTime(), 10) / 1000;
-    console.log(lastChangeTime > JWTiat);
     if (lastChangeTime > JWTiat) {
       return true;
     }
@@ -102,7 +101,6 @@ userSchema.methods.passwordChanged = async function (JWTiat) {
 
 userSchema.methods.createResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString('hex');
-  console.log(resetToken);
   this.passwordResetToken = crypto
     .createHash('sha256')
     .update(resetToken)

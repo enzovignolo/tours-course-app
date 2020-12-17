@@ -14,7 +14,6 @@ class APIFeatures {
     ); //MATCH A REGULAR EXPRESSION AND INSERTS $ for MONGOOSE FILTER PUPOSES
 
     // QUERY OBJECT
-    console.log(JSON.parse(queryStr));
     this.query = this.Model.find(JSON.parse(queryStr));
     return this;
   }

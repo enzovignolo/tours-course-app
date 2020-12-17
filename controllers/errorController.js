@@ -90,7 +90,6 @@ module.exports = (err, req, res, next) => {
     Object.getOwnPropertyNames(err).forEach(function (property) {
       error[property] = err[property];
     });
-    console.log(error);
 
     if (err.name === 'CastError') {
       error = handleCastErrorDB(error);

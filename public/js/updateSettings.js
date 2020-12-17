@@ -7,12 +7,9 @@ export const updateUserSettings = async (data, type) => {
   try {
     const res = await axios({
       method: 'PATCH',
-      url: `http://127.0.0.1:8000/api/v1/users/update-${
-        type === 'password' ? 'password' : 'user'
-      }`,
+      url: `/api/v1/users/update-${type === 'password' ? 'password' : 'user'}`,
       data
     });
-    console.log(res);
     if (res.data.status === 'success') {
       showAlert('success', `${type.toUpperCase()} UPDATED!`);
       window.setTimeout(() => {

@@ -8,13 +8,11 @@ module.exports = class Email {
     this.firstName = user.name.split(' ')[0];
     this.url = url;
     this.from = `Natours App <${process.env.EMAIL_FROM}>`;
-    console.log('mailconstructed');
   }
 
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
       //sendgrid
-      console.log('creating email..');
       return nodemailer.createTransport({
         service: 'SendGrid',
         auth: {

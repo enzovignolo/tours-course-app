@@ -67,12 +67,10 @@ reviewSchema.pre(/^findOneAnd/, async function (next) {
   next();
 });
 reviewSchema.post(/^findOneAnd/, function () {
-  console.log(this.r);
   this.r.constructor.calculateAvg(this.r.tour); // HERE WE CAN ACCESS THE DOCUMENT TO PASS IT TO THE STATIC METHOD.
 });
 
 reviewSchema.post('save', function () {
-  console.log(this.constructor);
   this.constructor.calculateAvg(this.tour);
 });
 
